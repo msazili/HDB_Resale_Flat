@@ -3,8 +3,10 @@ import requests
 import pandas as pd
 
 from src.config import config
+from src.utils import PipelineUtils
 
 logger = logging.getLogger(__name__)
+utils = PipelineUtils()
 
 class DataExtractor:
     """Class responsible for extracting data from the source."""
