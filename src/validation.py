@@ -12,12 +12,8 @@ class DataValidator:
     """
     Data Quality Framework for HDB Resale Price Dataset
     """
-    
-    def __init__(self):
-        # Filter dataset from Jan 2012 to Dec 2016
-        raw_filename = f"{config.CLEANED_FOLDER}/{config.DATA_FILTERED_FILENAME}"
-        df = pd.read_csv(raw_filename, sep=',', header=0, encoding='utf-8')
 
+    def __init__(self, df: pd.DataFrame):
         self.df = df
         self.quality_report = {}
         self.validation_results = []

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class DataExtractor:
     """Class responsible for extracting data from the source."""
 
-    def extract_data(self):
+    def get_raw_data(self):
         """Extract data from the source."""
         logger.info(f"Extracting data from {config.COLLECTION_URL}")
 
@@ -83,3 +83,50 @@ class DataExtractor:
             logger.error(f"Error during data extraction: {e}")
             raise
 
+
+    def filter_data(self):
+        # Filter dataset from Jan 2012 to Dec 2016
+    
+        raw_filename = f"{config.RAW_FOLDER}/{config.RAW_COMBINED_FILENAME}"
+
+        df = pd.read_csv(raw_filename, sep=',', header=0, encoding='utf-8')
+
+        print(f"Get Raw CSV file {raw_filename} = {len(df)} successfully!")        
+
+        start_date = pd.to_datetime(f"{config.START_DATE}", format='%Y-%m')
+        end_date = pd.to_datetime(f"{config.END_DATE}", format='%Y-%m')
+
+        data_month = pd.to_datetime(df['month'], format='%Y-%m')
+
+        # Step 1: Filter the DataFrame based on the date range
+        filtered_df = df[(data_month >= start_date) & (data_month <= end_date)]
+
+        print(f"\nStep 1: Filtered data between {config.START_DATE} and {config.END_DATE}:")
+
+        # Step 2: Update the remaining_lease column
+        filtered_df['remaining_lease'] = filtered_df['lease_commence_date'].apply(utils.calculate_remaining_lease)
+
+        print(f"\nStep 2: Calculate remaining lease")
+
+        # Step 3: Calculate Average Resale Price group by month, town, and flat_type
+        filtered_df['avg_resale_price'] = filtered_df.groupby(['month', 'town', 'flat_type'])['resale_price'].transform('mean')
+        filtered_df['avg_resale_price'] = filtered_df['avg_resale_price'].round(2)
+
+        print(f"\nStep 3: Calculate average resale prices")
+
+        # print(filtered_df)
+
+        # Store the filtered data to a new CSV file
+        filtered_filename = f"{config.CLEANED_FOLDER}/{config.DATA_FILTERED_FILENAME}"
+        filtered_df.to_csv(filtered_filename, index=False)
+
+        print(f"CSV file {filtered_filename} = {len(filtered_df)} saved successfully!")        
+        
+
+    def extract_data(self):
+        """Extract data from the source."""
+        logger.info(f"Extracting data from {config.COLLECTION_URL}")
+
+        self.get_raw_data()
+        self.filter_data()
+        
