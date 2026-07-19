@@ -20,7 +20,7 @@ The purpose of this project is to implement data pipeline to ingest HDB Resale F
 Please run **uv run main.py** to extract HDB Resale Flat data from data.gov.sg and store all generated data in **output** folder.
 
 
-## 3. How to run
+## 4. How to run
 
 ```bash
 # Install dependencies
